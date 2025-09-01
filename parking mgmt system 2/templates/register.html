@@ -1,0 +1,102 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Register</title>
+    <link rel="stylesheet" href="/static/styles.css">
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+    <script>
+        $(document).ready(function() {
+            $("#registerForm").submit(function(event) {
+                event.preventDefault();  // Prevent default form submission
+                
+                $.ajax({
+                    type: "POST",
+                    url: "/register",
+                    data: $(this).serialize(),
+                    dataType: "json",
+                    success: function(response) {
+                        if (response.status === "error") {
+                            showAlert(response.message);
+                        } else if (response.status === "success") {
+                            window.location.href = response.redirect;  // Redirect to login page
+                        }
+                    }
+                });
+            });
+
+            function showAlert(message) {
+                $("#dialogBox .message").text(message);
+                $("#dialogBox").fadeIn();
+            }
+
+            $("#closeDialog").click(function() {
+                $("#dialogBox").fadeOut();
+            });
+        });
+    </script>
+    <style>
+        /* Dialog Box Styling */
+        #dialogBox {
+            display: none;
+            position: fixed;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            background-color: white;
+            padding: 20px;
+            border: 2px solid red;
+            box-shadow: 0px 0px 10px rgba(0, 0, 0, 0.3);
+            text-align: center;
+            z-index: 1000;
+        }
+        #dialogBox .message {
+            font-size: 16px;
+            color: red;
+            margin-bottom: 10px;
+        }
+        #closeDialog {
+            background-color: red;
+            color: white;
+            border: none;
+            padding: 5px 10px;
+            cursor: pointer;
+        }
+    </style>
+</head>
+<body>
+    <h1>Register</h1>
+
+    <!-- Warning Dialog Box -->
+    <div id="dialogBox">
+        <p class="message"></p>
+        <button id="closeDialog">OK</button>
+    </div>
+
+    <form id="registerForm" method="POST">
+        <label>Name:</label>
+        <input type="text" name="name" required>
+        
+        <label>USN:</label>
+        <input type="text" name="usn" required>
+        
+        <label>Email:</label>
+        <input type="email" name="email" required>
+        
+        <label>Phone Number:</label>
+        <input type="text" name="phone_number" required>
+        
+        <label>Vehicle Type:</label>
+        <select name="vehicle_type" required>
+            <option value="2-wheeler">2-Wheeler</option>
+            <option value="4-wheeler">4-Wheeler</option>
+        </select>
+        
+        <label>Password:</label>
+        <input type="password" name="password" required>
+        
+        <button type="submit">Register</button>
+    </form>
+</body>
+</html>

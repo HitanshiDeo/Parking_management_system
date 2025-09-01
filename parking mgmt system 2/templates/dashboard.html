@@ -1,0 +1,113 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Dashboard</title>
+    <link rel="stylesheet" href="/static/styles.css">
+    <style>
+        .top-bar {
+            display: flex;
+            justify-content: space-between;
+            padding: 10px;
+        }
+        .top-bar button {
+            padding: 10px 15px;
+            background-color: #007BFF;
+            color: white;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+        }
+        .top-bar button:hover {
+            background-color: #0056b3;
+        }
+        .center-content {
+            text-align: center;
+            margin-top: 20px;
+        }
+    </style>
+</head>
+<body>
+    <div class="top-bar">
+        <a href="/my_reservations"><button>View My Reservations</button></a>
+        <a href="/logout"><button>Logout</button></a>
+    </div>
+    
+    <div class="center-content">
+        <h1>Welcome, {{ name }}</h1>
+        <h2>Available Parking Slots</h2>
+    </div>
+    
+    <table>
+        <tr>
+            <th>Slot ID</th>
+            <th>Type</th>
+            <th>Location</th>
+            <th>Status</th>
+            <th>Action</th>
+        </tr>
+        {% for slot in slots %}
+        <tr id="slot-{{ slot[0] }}">
+            <td>{{ slot[0] }}</td>
+            <td>{{ slot[1] }}</td>
+            <td>{{ slot[2] }}</td>
+            <td class="status">{{ slot[3] }}</td>
+            <td>
+                {% if slot[3] == 'Available' %}
+                    <form method="POST" action="/reserve/{{ slot[0] }}">
+                        <button type="submit">Reserve</button>
+                    </form>
+                {% elif slot[3] == 'Reserved' %}
+                    <form method="POST" action="/checkin/{{ slot[0] }}">
+                        <button type="submit">Check-In</button>
+                    </form>
+                {% elif slot[3] == 'Occupied' %}
+                    <form method="POST" action="/checkout/{{ slot[0] }}">
+                        <button type="submit">Check-Out</button>
+                    </form>
+                {% endif %}
+            </td>
+        </tr>
+        {% endfor %}
+    </table>
+    <br>
+    
+    <script>
+        function refreshSlots() {
+            fetch('/refresh_slots')
+                .then(response => response.json())
+                .then(slots => {
+                    slots.forEach(slot => {
+                        const row = document.getElementById('slot-' + slot.Slot_ID);
+                        const statusCell = row.querySelector('.status');
+                        const actionCell = row.querySelector('td:last-child');
+
+                        statusCell.textContent = slot.Availability;
+                        actionCell.innerHTML = '';
+                        if (slot.Availability === 'Available') {
+                            actionCell.innerHTML = `
+                                <form method="POST" action="/reserve/${slot.Slot_ID}">
+                                    <button type="submit">Reserve</button>
+                                </form>
+                            `;
+                        } else if (slot.Availability === 'Reserved') {
+                            actionCell.innerHTML = `
+                                <form method="POST" action="/checkin/${slot.Slot_ID}">
+                                    <button type="submit">Check-In</button>
+                                </form>
+                            `;
+                        } else if (slot.Availability === 'Occupied') {
+                            actionCell.innerHTML = `
+                                <form method="POST" action="/checkout/${slot.Slot_ID}">
+                                    <button type="submit">Check-Out</button>
+                                </form>
+                            `;
+                        }
+                    });
+                });
+        }
+        setInterval(refreshSlots, 60000);
+    </script>
+</body>
+</html>

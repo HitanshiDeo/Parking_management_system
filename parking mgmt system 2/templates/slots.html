@@ -1,0 +1,32 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Available Slots in {{ location }}</title>
+</head>
+<body>
+    <h1>Available Slots in {{ location }}</h1>
+    <table border="1">
+        <tr>
+            <th>Slot ID</th>
+            <th>Availability</th>
+            <th>Actions</th>
+        </tr>
+        {% for slot in slots %}
+        <tr>
+            <td>{{ slot[0] }}</td>
+            <td>{{ slot[2] }}</td>
+            <td>
+                {% if slot[2] == 'Available' %}
+                <form action="{{ url_for('reserve', Slot_ID=slot[0]) }}" method="post">
+                    <button type="submit">Reserve</button>
+                </form>
+                {% else %}
+                Reserved
+                {% endif %}
+            </td>
+        </tr>
+        {% endfor %}
+    </table>
+    <a href="/locations">Back to Locations</a>
+</body>
+</html>

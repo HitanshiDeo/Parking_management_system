@@ -1,0 +1,48 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>My Reservations</title>
+    <style>
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-top: 20px;
+        }
+        th, td {
+            border: 1px solid black;
+            padding: 8px;
+            text-align: left;
+        }
+        th {
+            background-color: #f2f2f2;
+        }
+    </style>
+</head>
+<body>
+    <h2>My Reservations</h2>
+    <table>
+        <tr>
+            <th>Slot ID</th>
+            <th>Slot Type</th>
+            <th>Location</th>
+            <th>Availability</th>
+            <th>Reservation Time</th>
+            <th>Location ID</th>
+            <th>Reserved for 15 mins</th>
+        </tr>
+        {% for slot in reserved_slots %}
+        <tr>
+            <td>{{ slot[0] }}</td>  <!-- Slot ID -->
+            <td>{{ slot[1] }}</td>  <!-- Slot Type -->
+            <td>{{ slot[2] if slot[2] else 'N/A' }}</td>  <!-- Location -->
+            <td>{{ slot[3] }}</td>  <!-- Availability -->
+            <td>{{ slot[4] }}</td>  <!-- Reservation Time -->
+            <td>{{ slot[5] }}</td>  <!-- Location ID -->
+            <td>{{ 'Yes' if slot[6] == 'Yes' else 'No' }}</td>  <!-- Reserved for 15 mins -->
+        </tr>
+        {% endfor %}
+    </table>
+</body>
+</html>
